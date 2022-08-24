@@ -15,6 +15,10 @@ abstract class StatelessWidget extends StatefulWidget {
   /// Called when this object is removed from the tree permanently.
   void dispose() {}
 
+  bool shouldResetState(covariant StatelessWidget oldWidget) {
+    return false;
+  }
+
   BuildContext get context => _state!.context;
 
   @override
@@ -42,8 +46,8 @@ abstract class StatelessWidget extends StatefulWidget {
   }
 
   void _disposeWithState(_StatelessState state) {
+    dispose();
     _state = null;
-    return dispose();
   }
 }
 
@@ -51,6 +55,7 @@ class _StatelessState<T extends StatelessWidget> extends State<T> {
   final Map<String, dynamic> _data = <String, dynamic>{};
 
   dynamic operator [](Symbol k) => _data[k.name];
+
   void operator []=(Symbol k, dynamic v) => setState(() => _data[k.name] = v);
 
   @override
@@ -63,6 +68,15 @@ class _StatelessState<T extends StatelessWidget> extends State<T> {
   void dispose() {
     widget._disposeWithState(this);
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant T oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.shouldResetState(oldWidget)) {
+      oldWidget._disposeWithState(this);
+      widget._initWithState(this);
+    }
   }
 
   @override
