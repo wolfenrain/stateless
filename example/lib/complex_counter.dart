@@ -68,7 +68,7 @@ abstract class CounterCacheInterface {
   late VoidCallback onCount;
 }
 
-class CounterCache extends StatelessWidget implements CounterCacheInterface {
+class CounterCache extends Stateless implements CounterCacheInterface {
   CounterCache({
     super.key,
     required this.counter,
