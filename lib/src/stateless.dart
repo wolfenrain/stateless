@@ -25,6 +25,8 @@ abstract class Stateless extends InheritedWidget {
   /// Called when this object is removed from the tree permanently.
   void dispose() {}
 
+  bool shouldResetState(covariant Stateless oldWidget) => false;
+
   @override
   bool updateShouldNotify(Stateless oldWidget) => false;
 
@@ -69,9 +71,8 @@ class _StateWidget extends StatefulWidget {
   }
 
   void _disposeWithState(_StatelessState state) {
-    dispose();
+    parent.dispose();
     _state = null;
-    return parent.dispose();
   }
 
   @override
@@ -101,7 +102,7 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   @override
   void didUpdateWidget(covariant T oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.shouldResetState(oldWidget)) {
+    if (widget.parent.shouldResetState(oldWidget.parent)) {
       oldWidget._disposeWithState(this);
       widget._initWithState(this);
     }
