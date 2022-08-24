@@ -54,6 +54,7 @@ class _StatelessElement extends InheritedElement {
   _StatelessElement(Stateless super.widget);
 }
 
+// ignore: the following line :-)
 // ignore: must_be_immutable
 class _StateWidget extends StatefulWidget {
   _StatelessState? _state;
@@ -84,7 +85,6 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   final Map<String, dynamic> _data = <String, dynamic>{};
 
   dynamic operator [](Symbol k) => _data[k.name];
-
   void operator []=(Symbol k, dynamic v) => setState(() => _data[k.name] = v);
 
   @override
@@ -112,7 +112,6 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     _parent = _findParent(context);
   }
 
