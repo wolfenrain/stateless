@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart' hide StatelessWidget;
+import 'package:flutter/material.dart';
 import 'package:stateless/stateless.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class MyCounter {
   late int _counter;
 }
 
-class MyHomePage extends StatelessWidget implements MyCounter {
+class MyHomePage extends Stateless implements MyCounter {
   MyHomePage({super.key, required this.title});
 
   final String title;
@@ -39,19 +39,35 @@ class MyHomePage extends StatelessWidget implements MyCounter {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text('$_counter', style: Theme.of(context).textTheme.headline4),
-          ],
-        ),
+        child: MyCounterText(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _counter++,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
+    );
+  }
+}
+
+class MyCounterText extends StatelessWidget {
+  MyCounterText({super.key});
+
+  String x = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final counter = context.read<MyHomePage>()._counter;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('You have pushed the button this many times:'),
+        Text(
+          '$counter',
+          style: Theme.of(context).textTheme.headline4,
+        ),
+      ],
     );
   }
 }
