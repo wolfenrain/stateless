@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart' hide StatelessWidget;
 import 'package:stateless/stateless.dart';
 
-class ILoveChaosContainer extends StatefulWidget {
-  const ILoveChaosContainer({super.key});
+class CounterContainer extends StatefulWidget {
+  const CounterContainer({super.key});
 
   @override
-  State<ILoveChaosContainer> createState() => _ILoveChaosContainerState();
+  State<CounterContainer> createState() => _CounterContainerState();
 }
 
-class _ILoveChaosContainerState extends State<ILoveChaosContainer> {
+class _CounterContainerState extends State<CounterContainer> {
   ValueNotifier<int> counter1 = ValueNotifier(0);
   ValueNotifier<int> counter2 = ValueNotifier(10);
 
@@ -27,33 +27,26 @@ class _ILoveChaosContainerState extends State<ILoveChaosContainer> {
           children: [
             Text(
               'Counter ${isCounter1Active ? '1' : '2'}:'
-                  '${activeCounter.value}',
+              '${activeCounter.value}',
             ),
-            if (isShowingPreviousValue)
-              ILoveChaos(
-                counter: activeCounter,
-              ),
-            const SizedBox(
-              height: 100,
-            ),
+            if (isShowingPreviousValue) CounterCache(counter: activeCounter),
+            const SizedBox(height: 100),
             ElevatedButton(
               onPressed: () {
                 setState(() {
                   isShowingPreviousValue = !isShowingPreviousValue;
                 });
               },
-              child: Text("Toggle previous value"),
+              child: const Text('Toggle previous value'),
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 setState(() {
                   isCounter1Active = !isCounter1Active;
                 });
               },
-              child: Text('Toggle active Counter'),
+              child: const Text('Toggle active Counter'),
             ),
           ],
         ),
@@ -69,14 +62,14 @@ class _ILoveChaosContainerState extends State<ILoveChaosContainer> {
   }
 }
 
-abstract class ILoveChaosInterface {
+abstract class CounterCacheInterface {
   late int value;
   late int? previousValue;
   late VoidCallback onCount;
 }
 
-class ILoveChaos extends StatelessWidget implements ILoveChaosInterface {
-  ILoveChaos({
+class CounterCache extends StatelessWidget implements CounterCacheInterface {
+  CounterCache({
     super.key,
     required this.counter,
   });
@@ -102,12 +95,12 @@ class ILoveChaos extends StatelessWidget implements ILoveChaosInterface {
   }
 
   @override
-  bool shouldResetState(ILoveChaos oldWidget) {
+  bool shouldResetState(CounterCache oldWidget) {
     return oldWidget.counter != counter;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Text("previousValue: ${previousValue ?? 'i dont know'}");
+    return Text("previousValue: ${previousValue ?? "I don't know"}");
   }
 }
