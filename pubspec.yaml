@@ -1,6 +1,6 @@
 name: stateless
-description: A Very Good Project created by Very Good CLI.
-version: 1.0.0+1
+description: A stateless stateful state management package.
+version: 0.1.0
 publish_to: none
 
 environment:
