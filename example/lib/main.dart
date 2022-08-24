@@ -36,9 +36,7 @@ class MyHomePage extends Stateless implements MyCounter {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: MyCounterText(),
-      ),
+      body: const Center(child: MyCounterText()),
       floatingActionButton: FloatingActionButton(
         onPressed: () => counter++,
         tooltip: 'Increment',
@@ -48,8 +46,8 @@ class MyHomePage extends Stateless implements MyCounter {
   }
 }
 
-class MyCounterText extends Stateless {
-  MyCounterText({super.key});
+class MyCounterText extends StatelessWidget {
+  const MyCounterText({super.key});
 
   @override
   Widget build(BuildContext context) {

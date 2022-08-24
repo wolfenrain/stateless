@@ -16,7 +16,7 @@
 
 ## Introduction
 
-The goal of this package is to see if we can have state management without having to care about state management. The learning curve of `stateless` should be at a minimal, knowledge developers have from the standard Flutter APIs should be transferable, like `initState`, `dispose` and `build`.
+The goal of this package is to see if we can have state management without having to care about state management. The learning curve of Stateless should be at a minimal, knowledge developers have from known Flutter APIs should be transferable, like `initState`, `dispose` and `build`.
 
 ## Getting Started
 
@@ -29,9 +29,12 @@ In your flutter project, add the following in your `pubspec.yaml`:
 
 ## Usage
 
-The classic Flutter Counter Widget, rewritten with `stateless`:
+The classic Flutter Counter Widget, rewritten with Stateless:
 
 ```dart
+import 'package:flutter/material.dart';
+import 'package:stateless/stateless.dart';
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -97,4 +100,55 @@ As you can see the API is barely any different from normal Flutter widgets, by e
 
 ## Accessing state data in a child
 
-TODO: write this
+> **Note**: this feature does not work right now, so don't bother.
+
+Quite often you want to access state data from a parent in the tree, well Stateless is capable of doing that for you!
+
+Lets re-imagine the above counter app into two parts, one is the `Stateless` widget and the second part is a normal `StatelessWidget` that displays the counter value.
+
+```dart
+class MyHomePage extends Stateless implements MyCounter {
+  ... 
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      // We build our custom text counter widget here.
+      body: const Center(child: MyCounterText()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => counter++,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class MyCounterText extends StatelessWidget {
+  const MyCounterText({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // We can then watch our MyHomePage for state changes.
+    final myHomePage = context.watch<MyHomePage>();
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('You have pushed the button this many times:'),
+        Text(
+          '${myHomePage.counter}',
+          style: Theme.of(context).textTheme.headline4,
+        ),
+      ],
+    );
+  }
+}
+```
+
+Our `MyCounterText` widget can simply watch the state of our `MyHomePage` and read the current `counter` value from it.
+
+## Contributing
+
+Interested in contributing? We love pull request! See the [Contribution](CONTRIBUTING.md) document for more information.
