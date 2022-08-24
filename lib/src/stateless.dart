@@ -11,7 +11,7 @@ abstract class Stateless extends InheritedWidget {
   /// Obtains the nearest [Stateless] of type [T] up its widget tree and
   /// returns it.
   static T of<T extends Stateless>(BuildContext context) {
-    return (context.dependOnInheritedWidgetOfExactType<T>())!;
+    return context.dependOnInheritedWidgetOfExactType<T>()!;
   }
 
   @override
@@ -68,6 +68,7 @@ class _StateWidget extends StatefulWidget {
 
 class _StatelessState<T extends _StateWidget> extends State<T> {
   late Stateless _parent;
+  late _StatelessElement element;
 
   final Map<String, dynamic> _data = <String, dynamic>{};
 
@@ -83,6 +84,7 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
 
   @override
   Widget build(BuildContext context) {
+    element.notifyClients(_parent);
     widget._state = this;
     return _parent.build(context);
   }
@@ -123,6 +125,8 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
     late Stateless parent;
     context.visitAncestorElements((element) {
       if (element is _StatelessElement) {
+        this.element = element;
+
         parent = element.widget as Stateless;
         return true;
       }
@@ -132,10 +136,10 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   }
 }
 
-/// Exposes the [watch] method.
-extension StatelessWatch on BuildContext {
+/// Exposes the [observe] method.
+extension StatelessObserve on BuildContext {
   /// Obtain a value from the nearest ancestor [Stateless] of type [T].
-  T watch<T extends Stateless>() => Stateless.of<T>(this);
+  T observe<T extends Stateless>() => Stateless.of<T>(this);
 }
 
 extension on Symbol {

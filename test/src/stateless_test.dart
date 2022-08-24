@@ -39,7 +39,7 @@ class _TestWithReset extends Stateless implements _TestInterface {
 class _TestNested extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final widget = context.watch<_TestWidget>();
+    final widget = context.observe<_TestWidget>();
     return Text('${widget.value}');
   }
 }

@@ -69,38 +69,43 @@ class MyHomePage extends Stateless implements MyCounterState {
     counter = 0;
   }
 
+  void showSnackBar() {
+    // We can access the BuildContext from anywhere in our widget.
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('The count is at: $counter')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        );
-      ),
-      floatingActionButton: FloatingActionButton(
-        // Update the counter by just simply incrementing it.
-        onPressed: () => counter++,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      body: const Center(child: MyCounterText()),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            // Update the counter by just simply incrementing it.
+            onPressed: () => counter++,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 8),
+          FloatingActionButton(
+            onPressed: showSnackBar,
+            tooltip: 'Show SnackBar',
+            child: const Icon(Icons.lightbulb),
+          ),
+        ],
       ),
     );
   }
 }
 ```
 
-As you can see the API is barely any different from normal Flutter widgets, by extending from `Stateless` and implementing our state interface we can just update the interface properties and it will automatically know that it's state has changed and therefore trigger a rebuild.
+As you can see the API is barely any different from normal Flutter widgets, by extending from `Stateless` and implementing our state interface we can just update the interface properties and it will automatically know that it's state has changed and therefore triggers a rebuild.
 
 ## Accessing state data in a child
-
-> **Note**: this feature does not work right now, so don't bother.
 
 Quite often you want to access state data from a parent in the tree, well Stateless is capable of doing that for you!
 
@@ -116,10 +121,21 @@ class MyHomePage extends Stateless implements MyCounter {
       appBar: AppBar(title: Text(title)),
       // We build our custom text counter widget here.
       body: const Center(child: MyCounterText()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => counter++,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () => counter++,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 8),
+          FloatingActionButton(
+            onPressed: showSnackBar,
+            tooltip: 'Show SnackBar',
+            child: const Icon(Icons.lightbulb),
+          ),
+        ],
       ),
     );
   }
@@ -130,8 +146,8 @@ class MyCounterText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // We can then watch our MyHomePage for state changes.
-    final myHomePage = context.watch<MyHomePage>();
+    // We can then observe our MyHomePage for state changes.
+    final myHomePage = context.observe<MyHomePage>();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -147,7 +163,7 @@ class MyCounterText extends StatelessWidget {
 }
 ```
 
-Our `MyCounterText` widget can simply watch the state of our `MyHomePage` and read the current `counter` value from it.
+Our `MyCounterText` widget can simply observe the state of our `MyHomePage` and read the current `counter` value from it.
 
 ## Contributing
 

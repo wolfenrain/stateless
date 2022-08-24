@@ -32,15 +32,32 @@ class MyHomePage extends Stateless implements MyCounter {
     counter = 0;
   }
 
+  void showSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('The count is at: $counter')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: const Center(child: MyCounterText()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => counter++,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () => counter++,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 8),
+          FloatingActionButton(
+            onPressed: showSnackBar,
+            tooltip: 'Show SnackBar',
+            child: const Icon(Icons.lightbulb),
+          ),
+        ],
       ),
     );
   }
@@ -51,7 +68,7 @@ class MyCounterText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final myHomePage = context.watch<MyHomePage>();
+    final myHomePage = context.observe<MyHomePage>();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
