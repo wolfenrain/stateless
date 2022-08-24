@@ -26,9 +26,11 @@ abstract class Stateless extends InheritedWidget {
   Widget build(BuildContext context);
 
   /// Called when this object is inserted into the tree.
+  @mustCallSuper
   void initState() {}
 
   /// Called when this object is removed from the tree permanently.
+  @mustCallSuper
   void dispose() {}
 
   /// Called whenever the widget configuration changes.
@@ -37,6 +39,7 @@ abstract class Stateless extends InheritedWidget {
   bool shouldResetState(covariant Stateless oldWidget) => false;
 
   @override
+  @nonVirtual
   bool updateShouldNotify(Stateless oldWidget) => false;
 
   @override
@@ -59,23 +62,7 @@ class _StatelessElement extends InheritedElement {
 class _StateWidget extends StatefulWidget {
   _StatelessState? _state;
 
-  Widget _buildWithState(BuildContext context, _StatelessState state) {
-    _state = state;
-    return state._parent.build(context);
-  }
-
-  void _initWithState(_StatelessState state) {
-    _state = state;
-    return state._parent.initState();
-  }
-
-  void _disposeWithState(_StatelessState state) {
-    state._parent.dispose();
-    _state = null;
-  }
-
   @override
-  @nonVirtual
   State<_StateWidget> createState() => _StatelessState();
 }
 
@@ -91,12 +78,18 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   void initState() {
     super.initState();
     _parent = _findParent(context);
-    widget._initWithState(this);
+    _initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    widget._state = this;
+    return _parent.build(context);
   }
 
   @override
   void dispose() {
-    widget._disposeWithState(this);
+    _dispose();
     super.dispose();
   }
 
@@ -104,8 +97,8 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   void didUpdateWidget(covariant T oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_parent.shouldResetState(oldWidget._state!._parent)) {
-      oldWidget._disposeWithState(this);
-      widget._initWithState(this);
+      oldWidget._state!._dispose();
+      _initState();
     }
   }
 
@@ -113,10 +106,18 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _parent = _findParent(context);
+    widget._state = this;
   }
 
-  @override
-  Widget build(BuildContext context) => widget._buildWithState(context, this);
+  void _initState() {
+    widget._state = this;
+    _parent.initState();
+  }
+
+  void _dispose() {
+    _parent.dispose();
+    widget._state = null;
+  }
 
   Stateless _findParent(BuildContext context) {
     late Stateless parent;
