@@ -1,11 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+/// {@template stateless}
+/// A stateless widget that is stateful.
+/// {@endtemplate}
 abstract class Stateless extends InheritedWidget {
+  /// {@macro stateless}
   Stateless({super.key}) : super(child: _StateWidget());
 
+  /// Obtains the nearest [Stateless] of type [T] up its widget tree and
+  /// returns it.
   static T of<T extends Stateless>(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<T>() as T;
+    return (context.dependOnInheritedWidgetOfExactType<T>())!;
   }
 
   @override
@@ -25,6 +31,9 @@ abstract class Stateless extends InheritedWidget {
   /// Called when this object is removed from the tree permanently.
   void dispose() {}
 
+  /// Called whenever the widget configuration changes.
+  ///
+  /// If it returns true it will reset the state of the widget.
   bool shouldResetState(covariant Stateless oldWidget) => false;
 
   @override
@@ -45,33 +54,22 @@ class _StatelessElement extends InheritedElement {
   _StatelessElement(Stateless super.widget);
 }
 
+// ignore: must_be_immutable
 class _StateWidget extends StatefulWidget {
   _StatelessState? _state;
 
-  Stateless get parent {
-    _StatelessElement? x;
-    _state!.context.visitAncestorElements((v) {
-      if (v is _StatelessElement) {
-        x = v;
-        return true;
-      }
-      return false;
-    });
-    return x!.widget as Stateless;
-  }
-
   Widget _buildWithState(BuildContext context, _StatelessState state) {
     _state = state;
-    return parent.build(context);
+    return state._parent.build(context);
   }
 
   void _initWithState(_StatelessState state) {
     _state = state;
-    return parent.initState();
+    return state._parent.initState();
   }
 
   void _disposeWithState(_StatelessState state) {
-    parent.dispose();
+    state._parent.dispose();
     _state = null;
   }
 
@@ -81,6 +79,8 @@ class _StateWidget extends StatefulWidget {
 }
 
 class _StatelessState<T extends _StateWidget> extends State<T> {
+  late Stateless _parent;
+
   final Map<String, dynamic> _data = <String, dynamic>{};
 
   dynamic operator [](Symbol k) => _data[k.name];
@@ -90,6 +90,7 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   @override
   void initState() {
     super.initState();
+    _parent = _findParent(context);
     widget._initWithState(this);
   }
 
@@ -102,18 +103,39 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   @override
   void didUpdateWidget(covariant T oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.parent.shouldResetState(oldWidget.parent)) {
+    if (_parent.shouldResetState(oldWidget._state!._parent)) {
       oldWidget._disposeWithState(this);
       widget._initWithState(this);
     }
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _parent = _findParent(context);
+  }
+
+  @override
   Widget build(BuildContext context) => widget._buildWithState(context, this);
+
+  Stateless _findParent(BuildContext context) {
+    late Stateless parent;
+    context.visitAncestorElements((element) {
+      if (element is _StatelessElement) {
+        parent = element.widget as Stateless;
+        return true;
+      }
+      return false;
+    });
+    return parent;
+  }
 }
 
-extension StatelessRead on BuildContext {
-  T read<T extends Stateless>() => Stateless.of<T>(this);
+/// Exposes the [watch] method.
+extension StatelessWatch on BuildContext {
+  /// Obtain a value from the nearest ancestor [Stateless] of type [T].
+  T watch<T extends Stateless>() => Stateless.of<T>(this);
 }
 
 extension on Symbol {

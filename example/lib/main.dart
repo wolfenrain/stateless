@@ -9,18 +9,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Stateless Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: MyHomePage(title: 'Stateless Demo Home Page'),
     );
   }
 }
 
 class MyCounter {
-  late int _counter;
+  late int counter;
 }
 
 class MyHomePage extends Stateless implements MyCounter {
@@ -31,7 +29,7 @@ class MyHomePage extends Stateless implements MyCounter {
   @override
   void initState() {
     super.initState();
-    _counter = 0;
+    counter = 0;
   }
 
   @override
@@ -42,7 +40,7 @@ class MyHomePage extends Stateless implements MyCounter {
         child: MyCounterText(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _counter++,
+        onPressed: () => counter++,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
@@ -50,21 +48,19 @@ class MyHomePage extends Stateless implements MyCounter {
   }
 }
 
-class MyCounterText extends StatelessWidget {
+class MyCounterText extends Stateless {
   MyCounterText({super.key});
-
-  String x = '';
 
   @override
   Widget build(BuildContext context) {
-    final counter = context.read<MyHomePage>()._counter;
+    final myHomePage = context.watch<MyHomePage>();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text('You have pushed the button this many times:'),
         Text(
-          '$counter',
+          '${myHomePage.counter}',
           style: Theme.of(context).textTheme.headline4,
         ),
       ],
