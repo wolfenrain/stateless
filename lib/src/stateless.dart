@@ -69,6 +69,7 @@ class _StateWidget extends StatefulWidget {
   }
 
   void _disposeWithState(_StatelessState state) {
+    dispose();
     _state = null;
     return parent.dispose();
   }
@@ -82,6 +83,7 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   final Map<String, dynamic> _data = <String, dynamic>{};
 
   dynamic operator [](Symbol k) => _data[k.name];
+
   void operator []=(Symbol k, dynamic v) => setState(() => _data[k.name] = v);
 
   @override
@@ -94,6 +96,15 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   void dispose() {
     widget._disposeWithState(this);
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant T oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.shouldResetState(oldWidget)) {
+      oldWidget._disposeWithState(this);
+      widget._initWithState(this);
+    }
   }
 
   @override
