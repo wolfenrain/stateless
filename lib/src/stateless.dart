@@ -122,17 +122,16 @@ class _StatelessState<T extends _StateWidget> extends State<T> {
   }
 
   Stateless _findParent(BuildContext context) {
-    late Stateless parent;
+    late Stateless ancestor;
     context.visitAncestorElements((element) {
       if (element is _StatelessElement) {
         this.element = element;
-
-        parent = element.widget as Stateless;
-        return true;
+        ancestor = element.widget as Stateless;
+        return false;
       }
-      return false;
+      return true;
     });
-    return parent;
+    return ancestor;
   }
 }
 
