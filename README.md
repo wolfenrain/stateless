@@ -146,15 +146,15 @@ class MyCounterText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // We can then observe our MyHomePage for state changes.
-    final myHomePage = context.observe<MyHomePage>();
+    // We can then observe our MyCounter for state changes.
+    final myCounter = context.observe<MyCounter>();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text('You have pushed the button this many times:'),
         Text(
-          '${myHomePage.counter}',
+          '${myCounter.counter}',
           style: Theme.of(context).textTheme.headline4,
         ),
       ],
@@ -163,7 +163,7 @@ class MyCounterText extends StatelessWidget {
 }
 ```
 
-Our `MyCounterText` widget can simply observe the state of our `MyHomePage` and read the current `counter` value from it.
+Our `MyCounterText` widget can simply observe the state of our `MyCounter` and read the current `counter` value from it.
 
 ## Contributing
 

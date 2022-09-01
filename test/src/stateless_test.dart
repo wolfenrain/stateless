@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:stateless/stateless.dart';
 
 class _TestInterface {
@@ -39,10 +40,12 @@ class _TestWithReset extends Stateless implements _TestInterface {
 class _TestNested extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final widget = context.observe<_TestWidget>();
-    return Text('${widget.value}');
+    final interface = context.observe<_TestInterface>();
+    return Text('${interface.value}');
   }
 }
+
+class _MockBuildContext extends Mock implements BuildContext {}
 
 void main() {
   group('Stateless', () {
@@ -53,6 +56,32 @@ void main() {
       expect(find.text('0'), findsOneWidget);
       expect(find.text('1'), findsNothing);
     });
+
+    testWidgets(
+      'throws StateError if a Stateless widget is not found in the tree',
+      (tester) async {
+        final context = _MockBuildContext();
+        when(() => context.visitAncestorElements(any())).thenReturn(null);
+
+        final widget = _TestNested();
+        try {
+          widget.build(context);
+        } catch (err) {
+          expect(
+            err,
+            isStateError.having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                '''Bad state: No ancestor of type _TestInterface found in the widget tree.''',
+              ),
+            ),
+          );
+        }
+
+        verify(() => context.visitAncestorElements(any())).called(1);
+      },
+    );
 
     testWidgets('updates state', (WidgetTester tester) async {
       final widget = _TestWidget();

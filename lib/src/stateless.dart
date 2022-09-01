@@ -16,7 +16,7 @@ abstract class Stateless extends InheritedWidget {
   static T of<T extends Object>(BuildContext context) {
     InheritedElement? ancestor;
     context.visitAncestorElements((element) {
-      if (element is T) {
+      if (element.widget is T) {
         ancestor = element as InheritedElement;
         return false;
       }
