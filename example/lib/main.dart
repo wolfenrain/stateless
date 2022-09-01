@@ -68,14 +68,14 @@ class MyCounterText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final myHomePage = context.observe<MyHomePage>();
+    final myCounter = context.observe<MyCounter>();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text('You have pushed the button this many times:'),
         Text(
-          '${myHomePage.counter}',
+          '${myCounter.counter}',
           style: Theme.of(context).textTheme.headline4,
         ),
       ],
